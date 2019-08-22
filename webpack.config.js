@@ -1,20 +1,11 @@
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+require("babel-polyfill");
 
 module.exports = {
-  context: path.resolve(__dirname, "src"),
-  module: {
-    rules: [
-      {
-        use: {
-          loader: "babel-loader",
-          options: {
-            presets: ["@babel/preset-env"]
-          }
-        },
-        test: /\.js$/
-      }
-    ]
+  entry: {
+    app: ["babel-polyfill", "./app.js"]
   },
   devServer: {
     publicPath: "/",
@@ -26,16 +17,33 @@ module.exports = {
     stats: "minimal",
     hot: true
   },
-  entry: {
-    app: "./app.js"
+  context: path.resolve(__dirname, "src"),
+  module: {
+    rules: [
+      {
+        use: {
+          loader: "babel-loader",
+          options: {
+            presets: ["@babel/preset-env"]
+          }
+        },
+        test: /\.js$/
+      },
+      {
+        use: [
+          { loader: MiniCssExtractPlugin.loader },
+          { loader: "css-loader" }
+        ],
+        test: /\.css$/
+      }
+    ]
   },
   plugins: [
-    new HtmlWebpackPlugin({
-      template: "./index.html"
-    })
+    new MiniCssExtractPlugin({ filename: "./style.css" }),
+    new HtmlWebpackPlugin({ template: "./index.html" })
   ],
   output: {
-    filename: "bundle.js"
+    filename: "bundel.js"
   },
   mode: "development"
 };
